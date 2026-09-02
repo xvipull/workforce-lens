@@ -1,0 +1,4 @@
+#!/bin/sh
+# Best-effort publishing: never makes a local commit fail.
+git remote get-url origin >/dev/null 2>&1 || exit 0
+git push origin HEAD >/dev/null 2>&1 || echo "Auto-push deferred; run: git push"

@@ -1,0 +1,13 @@
+# Data extracts and report exports may contain confidential information
+data/raw/*
+!data/raw/.gitkeep
+data/staging/*
+!data/staging/.gitkeep
+reports/*
+!reports/.gitkeep
+powerbi/*.pbix
+excel/*.xlsx
+*.csv
+*.parquet
+.DS_Store
+.env
