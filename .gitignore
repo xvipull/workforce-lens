@@ -1,13 +1,17 @@
 # Data extracts and report exports may contain confidential information
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/workforce_snapshot_sample.csv
 data/staging/*
 !data/staging/.gitkeep
 reports/*
 !reports/.gitkeep
+!reports/data_quality_report.md
 powerbi/*.pbix
 excel/*.xlsx
 *.csv
+!data/raw/workforce_snapshot_sample.csv
 *.parquet
+*.db
 .DS_Store
 .env
