@@ -1,4 +1,5 @@
 import csv
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -33,6 +34,12 @@ class PipelineTests(unittest.TestCase):
         pipeline.run(as_of=date(2026, 9, 3))
         self.assertTrue(pipeline.DB_PATH.exists())
         self.assertIn("referential_integrity", pipeline.REPORT_PATH.read_text())
+
+    def test_curated_model_reconciles_to_clean_landing_table(self):
+        pipeline.run(as_of=date(2026, 9, 3))
+        with sqlite3.connect(pipeline.DB_PATH) as connection:
+            status = connection.execute("SELECT reconciliation_status FROM vw_reconciliation_source_to_reporting").fetchone()[0]
+        self.assertEqual(status, "PASS")
 
 
 if __name__ == "__main__":

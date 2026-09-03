@@ -7,6 +7,8 @@ data/staging/*
 reports/*
 !reports/.gitkeep
 !reports/data_quality_report.md
+!reports/figures/
+!reports/figures/*.png
 powerbi/*.pbix
 excel/*.xlsx
 *.csv
@@ -15,3 +17,4 @@ excel/*.xlsx
 *.db
 .DS_Store
 .env
+.cache/

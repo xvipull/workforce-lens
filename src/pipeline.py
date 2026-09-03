@@ -13,6 +13,7 @@ STAGE_PATH = ROOT / "data/staging/workforce_snapshot_clean.csv"
 DB_PATH = ROOT / "data/workforce_lens.db"
 REPORT_PATH = ROOT / "reports/data_quality_report.md"
 SCHEMA_PATH = ROOT / "sql/analytics_model.sql"
+ANALYTICS_PATH = ROOT / "sql/analytics_views.sql"
 
 REQUIRED_COLUMNS = {
     "snapshot_date", "worker_id", "org_id", "org_name", "location_id", "location_name",
@@ -158,6 +159,7 @@ def load_model(rows: list[dict[str, object]]) -> None:
               productive_hours, accepted_output_units, labor_cost_inr, approved_position_count, open_requisition_count)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
               int(str(row["snapshot_date"]).replace("-", "")), keys["org"][str(row["org_id"])], keys["location"][str(row["location_id"])], keys["job"][str(row["job_family"])], keys["scenario"][str(row["scenario_id"])], row["worker_id"], row["employment_status"], float(row["fte_fraction"]), row["hire_date"], row["termination_date"], row["termination_type"], float(row["scheduled_hours"]), float(row["productive_hours"]), float(row["accepted_output_units"]), float(row["labor_cost_inr"]), row["approved_position_count"], row["open_requisition_count"]))
+        connection.executescript(ANALYTICS_PATH.read_text())
         connection.commit()
     finally:
         connection.close()
