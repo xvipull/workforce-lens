@@ -8,6 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import pipeline  # noqa: E402
+import advanced_analytics  # noqa: E402
 
 
 class PipelineTests(unittest.TestCase):
@@ -40,6 +41,19 @@ class PipelineTests(unittest.TestCase):
         with sqlite3.connect(pipeline.DB_PATH) as connection:
             status = connection.execute("SELECT reconciliation_status FROM vw_reconciliation_source_to_reporting").fetchone()[0]
         self.assertEqual(status, "PASS")
+
+    def test_advanced_outputs_are_aggregate_and_versioned(self):
+        pipeline.run(as_of=date(2026, 9, 5))
+        advanced_analytics.run()
+        with sqlite3.connect(pipeline.DB_PATH) as connection:
+            scenarios = connection.execute("SELECT COUNT(*) FROM analytics_capacity_scenario WHERE model_version = ?", (advanced_analytics.MODEL_VERSION,)).fetchone()[0]
+            drivers = connection.execute("SELECT COUNT(*) FROM analytics_attrition_absence_drivers").fetchone()[0]
+            view_drivers = connection.execute("SELECT COUNT(*) FROM vw_attrition_absence_driver_priorities").fetchone()[0]
+            columns = {row[1] for row in connection.execute("PRAGMA table_info(analytics_attrition_absence_drivers)")}
+        self.assertEqual(scenarios, 16)  # four segments × four documented scenarios
+        self.assertEqual(drivers, 4)
+        self.assertEqual(view_drivers, drivers)
+        self.assertNotIn("worker_id", columns)
 
 
 if __name__ == "__main__":
